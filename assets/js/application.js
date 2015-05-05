@@ -1,11 +1,11 @@
-var appHeight = 400,
-    appWidth = 840,
+var appHeight = $(window).height(),
+    appWidth = window.innerWidth,
     appCenterX = appWidth/2,
-    appCenterY = appHeight/2,
+    appCenterY = appHeight/1.5,
     stage = new Kinetic.Stage({
        container: 'container',
        width: appWidth,
-       height:appHeight
+       height:appCenterY
      }),
     layer = new Kinetic.Layer(),
     bugFile = new Image(),
@@ -29,19 +29,11 @@ var preloader = new GSPreloader({
 preloader.active(true);
 
 //for testing: click the window to toggle open/close the preloader
-document.onclick = document.ontouchstart = function() {
-  preloader.active( !preloader.active() );
-};
-
-TweenLite.set($quote, { perspective:400 });
-
-// Text animations
-splitTextTimeline.clear().time(0);
-mySplitText.revert();
-mySplitText.split({type:"words"})
-$(mySplitText.words).each(function(index,el){
-  splitTextTimeline.from($(el), 0.6, {opacity:0, force3D:true}, index * 0.01);
-  splitTextTimeline.from($(el), 0.6, {scale:index % 2 == 0  ? 0 : 2, ease:Back.easeOut}, index * 0.01);
+$('#continue').on('click', function() {
+  preloader.active(false);
+  initTextAnimation();
+  initImgAnimation();
+  $('#continue').hide();
 });
 
 function GSPreloader(options) {
@@ -69,7 +61,7 @@ function GSPreloader(options) {
   colors.push(colors.shift());
 
   //setup background box
-  TweenLite.set(box, {width: radius * 2 + 70, height: radius * 2 + 70, borderRadius:"14px", backgroundColor:options.boxColor || "white", border: options.boxBorder || "1px solid #AAA", position:"absolute", xPercent:-50, yPercent:-50, opacity:((options.boxOpacity != null) ? options.boxOpacity : 0.3)});
+  TweenLite.set(box, {width: radius * 2 + 70, height: radius * 2 + 70, borderRadius:"14px", backgroundColor:options.boxColor || "ghostwhite", border: options.boxBorder || "1px solid #AAA", position:"absolute", xPercent:-50, yPercent:-50, opacity:((options.boxOpacity != null) ? options.boxOpacity : 0.3)});
   box.className = options.boxClass || "preloader-box";
   element.appendChild(box);
 
@@ -120,45 +112,64 @@ function GSPreloader(options) {
   };
 }
 
+function initTextAnimation() {
+  TweenLite.set($quote, { perspective:400 });
 
-stage.add(layer);
-bugFile.src = "./assets/img/creature.png";
+  // Text animations
+  splitTextTimeline.clear().time(0);
+  mySplitText.revert();
+  mySplitText.split({type:"words"})
+  $(mySplitText.words).each(function(index,el){
+    splitTextTimeline.from($(el), 0.6, {opacity:0, force3D:true}, index * 0.01);
+    splitTextTimeline.from($(el), 0.6, {scale:index % 2 == 0  ? 0 : 2, ease:Back.easeOut}, index * 0.01);
 
-function getAnimation() {
-  var creature = new Kinetic.Image({
-    image: bugFile,
-    width:27,
-    height:29,
-    x:-50
+    splitTextTimeline.staggerFrom(mySplitText.chars, 0.2, {autoAlpha:0, scale:4, force3D:true}, 0.01, 0.5)
+      .staggerTo(mySplitText.words, 0.1, {color:"#9b59b6", scale:0.9}, 0.1, "words")
+      .staggerTo(mySplitText.words, 0.2, {color:"white", scale:1}, 0.1, "words+=0.1")
+      .staggerTo(mySplitText.lines, 0.5, {x:100, autoAlpha:0}, 0.2)
   });
-
-  //bezier magic provided by GSAP BezierPlugin (included with TweenMax)
-  //http://api.greensock.com/js/com/greensock/plugins/BezierPlugin.html
-  var bezTween = new TweenMax(creature, 6, {
-    bezier:{
-      type:"soft",
-      values:[{setX:150, setY:300}, {setX:300, setY:-10}, {setX:500 + Math.random() *100, setY:320*Math.random() + 50}, {setX:650, setY:320*Math.random() + 50}, {setX:900, setY:-80}],
-      //autoRotate needs to know how to adjust x/y/rotation so we pass in the names of the apporpriate KineticJS methods
-autoRotate:["setX","setY","setRotationDeg"]
-    },
-    ease:Linear.easeNone, autoCSS:false});
-
-  layer.add(creature);
-
-  return bezTween;
-
 }
 
-//create a bunch of Bezier tweens and add them to a timeline
-function buildTimeline() {
-  tl = new TimelineMax({repeat:4, onUpdate:redraw, delay:1});
-  for (i = 0 ; i< 30; i++){
-    tl.add(getAnimation(), i * 0.17);
+function initImgAnimation() {
+
+  stage.add(layer);
+  bugFile.src = "./assets/img/creature.png";
+
+  function getAnimation() {
+    var creature = new Kinetic.Image({
+      image: bugFile,
+      width:27,
+      height:29,
+      x:-50
+    });
+
+    //bezier magic provided by GSAP BezierPlugin (included with TweenMax)
+    //http://api.greensock.com/js/com/greensock/plugins/BezierPlugin.html
+    var bezTween = new TweenMax(creature, 6, {
+      bezier:{
+        type:"soft",
+        values:[{setX:appWidth/5, setY:appHeight/1.2}, {setX:appWidth/4, setY:-10}, {setX:appWidth/3 + Math.random() *100, setY:20*Math.random() + 50}, {setX:appWidth/2 + Math.random() * 100, setY:650}, {setX:appWidth/1, setY:-80}, {setX:appWidth*1.2, setY:appHeight/6}],
+        autoRotate:["setX","setY","setRotationDeg"]
+      },
+      ease:Linear.easeNone, autoCSS:false});
+
+    layer.add(creature);
+
+    return bezTween;
+
   }
-}
 
-buildTimeline();
+  //create a bunch of Bezier tweens and add them to a timeline
+  function buildTimeline() {
+    tl = new TimelineMax({repeat:10000, onUpdate:redraw, delay:1});
+    for (i = 0 ; i< 30; i++){
+      tl.add(getAnimation(), i * 0.17);
+    }
+  }
 
-function redraw() {
-  layer.draw();
+  buildTimeline();
+
+  function redraw() {
+    layer.draw();
+  }
 }

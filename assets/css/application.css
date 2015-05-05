@@ -1,10 +1,23 @@
 body {
+  background: url(../img/background.jpg) no-repeat;
+  background-size: 100%;
   font-family: sans-serif;
   font-size: 18px;
 }
 
-#container{
-  background-color:black;
-  width:840px;
-  height:400px;
+#quote {
+  text-align: center;
+  font-size: 17vmin;
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 5px 5px 15px #3e3e3e;
+}
+
+#continue {
+  color: white;
+  text-align: center;
+  font-size: 4vmin;
+  font-weight: bold;
+  text-shadow: 5px 5px 15px #3e3e3e;
+  cursor: pointer;
 }
