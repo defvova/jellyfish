@@ -1,13 +1,10 @@
-body { background-color:#000; }
-#demo {
-  width: 692px;
-  height: 60px;
-  background-color: #333;
-  padding: 8px;
+body {
+  font-family: sans-serif;
+  font-size: 18px;
 }
-#logo {
-  position: relative;
-  width: 60px;
-  height: 60px;
-  background: url(../img/rsz_ball.jpg) no-repeat;
+
+#container{
+  background-color:black;
+  width:840px;
+  height:400px;
 }

@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "jquery": "~2.1.4",
-    "gsap": "~1.16.1"
+    "gsap": "~1.16.1",
+    "kineticjs": "~5.1.0"
   }
 }
